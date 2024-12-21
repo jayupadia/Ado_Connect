@@ -20,7 +20,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="w-full border-b border-gray-800 bg-white dark:bg-[#1a1f2e] transition-colors duration-300">
+    <nav className="w-full border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
@@ -28,19 +28,19 @@ export default function Navbar() {
           </div>
           
           <div className="hidden space-x-8 md:flex">
-            <Link href="/" className="text-gray-900 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white transition-colors">
+            <Link href="/" className="text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
               Home
             </Link>
-            <Link href="/contact" className="text-gray-900 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white transition-colors">
+            <Link href="/contact" className="text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
               Contact Us
             </Link>
-            <Link href="/about" className="text-gray-900 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white transition-colors">
+            <Link href="/about" className="text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
               About Us
             </Link>
-            <Link href="/blogs" className="text-gray-900 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white transition-colors">
+            <Link href="/blogs" className="text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
               Blogs
             </Link>
-            <Link href="/news" className="text-gray-900 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white transition-colors">
+            <Link href="/news" className="text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
               News
             </Link>
           </div>
@@ -48,7 +48,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             <Link 
               href="/login" 
-              className="text-gray-900 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white transition-colors"
+              className="text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
               Login
             </Link>
@@ -62,7 +62,7 @@ export default function Navbar() {
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="text-gray-900 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white"
+              className="text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300"
             >
               {theme === 'dark' ? (
                 <Sun className="h-5 w-5" />

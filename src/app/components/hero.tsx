@@ -35,7 +35,7 @@ export function Hero() {
     <div className="text-center mb-16 relative z-10">
       <h1 
         ref={headingRef} 
-        className="text-6xl font-bold mb-4 text-gray-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r from-blue-400 to-indigo-600"
+        className="text-6xl font-bold mb-4 text-gray-900 dark:text-gray-100"
       >
         Welcome to Our Amazing Website
       </h1>

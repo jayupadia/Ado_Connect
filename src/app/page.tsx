@@ -4,7 +4,7 @@ import { Hero } from './components/hero'
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen flex flex-col items-center justify-center p-24 bg-white dark:bg-[#1a1f2e] transition-colors duration-300">
+    <main className="relative min-h-screen flex flex-col items-center justify-center p-24 bg-white dark:bg-gray-900 transition-colors duration-300">
       <MouseGradient />
       <Hero />
       <Features />
