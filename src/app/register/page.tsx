@@ -1,11 +1,15 @@
 import RegisterForm from '../components/RegisterForm'
-import GradientBackground from '../components/GradientBackground'
+import DynamicQuote from '../components/DynamicQuote'
 
 export default function Register() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-24 relative overflow-hidden">
-      <GradientBackground />
-      <RegisterForm />
+    <div className="h-screen flex flex-col md:flex-row bg-gray-100 dark:bg-gray-800 overflow-hidden">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-4 md:p-8">
+        <DynamicQuote />
+      </div>
+      <div className="w-full md:w-1/2 flex items-center justify-center p-4 md:p-8 bg-white dark:bg-gray-900">
+        <RegisterForm />
+      </div>
     </div>
   )
 }
