@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import { verifyOTP as verifyOtpRequest } from '../api/auth'
+import { useRouter } from 'next/navigation' // Ensure this import is correct
 
 const schema = yup.object({
   otp: yup.string().required('OTP is required').length(6, 'OTP must be 6 digits'),
@@ -16,9 +17,11 @@ type FormData = yup.InferType<typeof schema>
 export default function OtpVerificationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [countdown, setCountdown] = useState(120) // 5 minutes in seconds
+  const [email, setEmail] = useState(''); // Add state for email
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema)
   })
+  const router = useRouter() // Ensure this is used correctly
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -34,11 +37,28 @@ export default function OtpVerificationForm() {
     return () => clearInterval(timer)
   }, [])
 
+  useEffect(() => {
+    // Retrieve email from localStorage or other means
+    const storedEmail = localStorage.getItem('email');
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+  }, []);
+
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
-      await verifyOtpRequest(data)
-      // Handle successful OTP verification, e.g., redirect to login
+      const storedEmail = localStorage.getItem('email');
+      const registrationData = localStorage.getItem('registrationData');
+      if (storedEmail && registrationData) {
+        await verifyOtpRequest({ email: storedEmail, otp: data.otp, registrationData: JSON.parse(registrationData) }) // Include email and registration data in the request
+        localStorage.removeItem('email'); // Clear email from localStorage
+        localStorage.removeItem('registrationData'); // Clear registration data from localStorage
+        // Handle successful OTP verification, e.g., redirect to login
+        router.push('/login');
+      } else {
+        console.error('Email or registration data not found in localStorage');
+      }
     } catch (error) {
       console.error(error)
     } finally {

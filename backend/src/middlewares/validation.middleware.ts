@@ -1,22 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
+import { ZodSchema, ZodError } from 'zod';
 import { ValidationError } from '../success-engine/error';
 
-export const validationMiddleware = (schema: AnyZodObject) => 
-  async (req: Request, res: Response, next: NextFunction) => {
+export const validationMiddleware = (schema: ZodSchema) => (req: Request, res: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync(req.body);
-      next();
+        schema.parse(req.body);
+        next();
     } catch (error) {
-      if (error instanceof ZodError) {
-        const validationErrors = error.errors.map(err => ({
-          field: err.path.join('.'),
-          message: err.message
-        }));
-        next(new ValidationError(validationErrors));
-      } else {
-        next(error);
-      }
+        if (error instanceof ZodError) {
+            res.status(400).json({
+                statusCode: 400,
+                errors: error.errors.map(err => ({ field: err.path.join('.'), message: err.message })),
+            });
+        } else {
+            next(error);
+        }
     }
-  };
+};
 

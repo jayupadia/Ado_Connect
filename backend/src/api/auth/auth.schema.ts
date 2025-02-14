@@ -22,7 +22,8 @@ export const registerSchema = z.object({
 
 export const verifyOTPSchema = z.object({
   email: emailSchema,
-  otp: z.string().length(6),
+  otp: z.string().length(6, "OTP must be 6 digits"),
+  registrationData: registerSchema, // Include registration data
 })
 
 export const loginSchema = z.object({

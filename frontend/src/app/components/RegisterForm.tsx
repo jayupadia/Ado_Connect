@@ -34,6 +34,8 @@ export default function RegisterForm() {
     setIsSubmitting(true)
     try {
       await registerUser(data) // Call the register API
+      localStorage.setItem('email', data.email); // Store email in localStorage
+      localStorage.setItem('registrationData', JSON.stringify(data)); // Store registration data in localStorage
       router.push('/verify-otp')
     } catch (error) {
       console.error('Registration failed:', error)

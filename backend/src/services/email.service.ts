@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { config } from "../config/env";
+import type { RegisterInput } from "../api/auth/auth.interface";
 
 class EmailService {
   private transporter: nodemailer.Transporter;
@@ -31,18 +32,20 @@ class EmailService {
     }
   }
 
-  async sendCredentials(to: string, email: string, password: string): Promise<void> {
+  async sendCredentials(to: string, registrationData: RegisterInput): Promise<void> {
     try {
       await this.transporter.sendMail({
         from: config.EMAIL_FROM,
         to,
         subject: "Your Account Credentials",
-        text: `Your account has been successfully created. Here are your login credentials:\n\nEmail: ${email}\nPassword: ${password}\n\nPlease change your password after your first login.`,
+        text: `Your account has been successfully created. Here are your login credentials:\n\nUsername: ${registrationData.username}\nEmail: ${registrationData.email}\nPassword: ${registrationData.password}\nName: ${registrationData.name}\n\nPlease change your password after your first login.`,
         html: `
           <h1>Your Account Credentials</h1>
           <p>Your account has been successfully created. Here are your login credentials:</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Password:</strong> ${password}</p>
+          <p><strong>Username:</strong> ${registrationData.username}</p>
+          <p><strong>Email:</strong> ${registrationData.email}</p>
+          <p><strong>Password:</strong> ${registrationData.password}</p>
+          <p><strong>Name:</strong> ${registrationData.name}</p>
           <p>Please change your password after your first login.</p>
         `,
       });

@@ -16,6 +16,8 @@ export class AuthService {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await OTP.create({ email: input.email, otp });
 
+    console.log(`OTP created for email: ${input.email}, OTP: ${otp}`);
+
     try {
       await emailService.sendOTP(input.email, otp);
       console.log(`OTP sent to email: ${input.email}`);
@@ -26,31 +28,35 @@ export class AuthService {
     }
   }
 
-  static async verifyOTP(email: string, otp: string) {
+  static async verifyOTP(email: string, otp: string, registrationData: RegisterInput) {
+    console.log(`Verifying OTP for email: ${email}, OTP: ${otp}`);
+
     const otpRecord = await OTP.findOne({ email, otp });
     if (!otpRecord) {
+      console.log(`No OTP record found for email: ${email}, OTP: ${otp}`);
       throw new BadRequestError("Invalid OTP");
     }
 
     // Delete the OTP record
     await OTP.deleteOne({ _id: otpRecord._id });
 
+    // Create a new user with the registration data
     const user = new User({
-      username: email.split("@")[0], // Temporary username, can be updated later
-      email: email,
-      password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
-      name: email.split("@")[0], // Temporary name, can be updated later
+      username: registrationData.username,
+      email: registrationData.email,
+      password: await bcrypt.hash(registrationData.password, 10),
+      name: registrationData.name,
     });
 
     await user.save();
 
-    // Send credentials to user's email
+    // Send the registration data to the user's email
     try {
-      await emailService.sendCredentials(email, email, user.password);
-      console.log(`Credentials sent to email: ${email}`);
+      await emailService.sendCredentials(email, registrationData);
+      console.log(`Registration data sent to email: ${email}`);
     } catch (error) {
-      console.error(`Failed to send credentials to email: ${email}`, error);
-      throw new InternalServerError("Failed to send credentials");
+      console.error(`Failed to send registration data to email: ${email}`, error);
+      throw new InternalServerError("Failed to send registration data");
     }
 
     const userId = user._id as unknown as string;
