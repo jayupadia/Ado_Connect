@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { motion } from 'framer-motion'
+import { verifyOTP as verifyOtpRequest } from '../api/auth'
 
 const schema = yup.object({
   otp: yup.string().required('OTP is required').length(6, 'OTP must be 6 digits'),
@@ -35,10 +36,14 @@ export default function OtpVerificationForm() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    console.log(data)
-    setIsSubmitting(false)
+    try {
+      await verifyOtpRequest(data)
+      // Handle successful OTP verification, e.g., redirect to login
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const formatTime = (time: number) => {

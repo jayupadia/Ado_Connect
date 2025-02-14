@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { config } from '../config/env';
+import { verifyToken } from '../shared/jwt';
 import { UnauthorizedError } from '../success-engine/error';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +10,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   }
 
   try {
-    const decoded = jwt.verify(token, config.JWT_SECRET);
+    const decoded = verifyToken(token);
     (req as any).user = decoded;
     next();
   } catch (error) {

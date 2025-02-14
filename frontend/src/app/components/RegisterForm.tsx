@@ -9,12 +9,14 @@ import { Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Loader from './Loader'
+import { register as registerUser } from '../api/auth' // Import the register function
 
 const schema = yup.object({
   username: yup.string().required('Username is required').min(3, 'Username must be at least 3 characters'),
   email: yup.string().required('Email is required').email('Must be a valid email'),
   password: yup.string().required('Password is required').min(8, 'Password must be at least 8 characters'),
   confirmPassword: yup.string().oneOf([yup.ref('password')], 'Passwords must match'),
+  name: yup.string().required('Name is required') // Add name validation
 }).required()
 
 type FormData = yup.InferType<typeof schema>
@@ -30,10 +32,14 @@ export default function RegisterForm() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    console.log(data)
-    setIsSubmitting(false)
-    router.push('/verify-otp')
+    try {
+      await registerUser(data) // Call the register API
+      router.push('/verify-otp')
+    } catch (error) {
+      console.error('Registration failed:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -70,6 +76,17 @@ export default function RegisterForm() {
               placeholder="Enter your email"
             />
             {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
+          </div>
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Name</label>
+            <input
+              type="text"
+              id="name"
+              {...register('name')}
+              className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
+              placeholder="Enter your name"
+            />
+            {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>}
           </div>
 
           <div>

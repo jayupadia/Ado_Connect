@@ -7,6 +7,7 @@ import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { resetPassword as resetPasswordRequest } from '../api/auth'
 
 const schema = yup.object({
   password: yup.string()
@@ -42,12 +43,15 @@ export default function ResetPasswordForm() {
   const router = useRouter()
 
   const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    console.log(data)
-    setIsSubmitting(false)
-    router.push('/login')
+    setIsSubmitting(true);
+    try {
+      await resetPasswordRequest(data);
+      router.push('/login');
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const inputClasses = "w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300"

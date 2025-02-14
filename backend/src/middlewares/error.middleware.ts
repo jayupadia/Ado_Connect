@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomError, ValidationError } from '../success-engine/error';
-import { logger } from '../config/logger';
 
 export const errorMiddleware = (err: Error, req: Request, res: Response, next: NextFunction) => {
-  logger.error(err);
+  console.error(err);
 
   if (err instanceof CustomError) {
     if (err instanceof ValidationError) {

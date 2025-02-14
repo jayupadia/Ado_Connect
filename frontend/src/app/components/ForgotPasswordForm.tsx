@@ -7,6 +7,7 @@ import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { forgotPassword as forgotPasswordRequest } from '../api/auth'
 
 const schema = yup.object({
   email: yup.string().required('Email is required').email('Must be a valid email'),
@@ -24,11 +25,14 @@ export default function ForgotPasswordForm() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    console.log(data)
-    setIsSubmitting(false)
-    router.push('/verify-otp')
+    try {
+      await forgotPasswordRequest(data)
+      router.push('/verify-otp')
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const inputClasses = "w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300"
