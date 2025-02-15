@@ -52,20 +52,20 @@ export default function RegisterForm() {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-md"
+      className="w-full max-w-md mx-auto"
     >
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">Create an Account</h2>
+      <h2 className="text-3xl font-bold mb-4 text-center text-gray-800 dark:text-white">Create an Account</h2>
       {isSubmitting ? (
         <Loader />
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Username</label>
             <input
               type="text"
               id="username"
               {...register('username')}
-              className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
+              className="w-full px-3 py-1 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
               placeholder="Enter your username"
             />
             {errors.username && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username.message}</p>}
@@ -77,7 +77,7 @@ export default function RegisterForm() {
               type="email"
               id="email"
               {...register('email')}
-              className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
+              className="w-full px-3 py-1 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
               placeholder="Enter your email"
             />
             {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
@@ -88,7 +88,7 @@ export default function RegisterForm() {
               type="text"
               id="name"
               {...register('name')}
-              className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
+              className="w-full px-3 py-1 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
               placeholder="Enter your name"
             />
             {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>}
@@ -101,7 +101,7 @@ export default function RegisterForm() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 {...register('password')}
-                className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
+                className="w-full px-3 py-1 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
                 placeholder="Enter your password"
               />
               <button
@@ -122,7 +122,7 @@ export default function RegisterForm() {
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 {...register('confirmPassword')}
-                className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
+                className="w-full px-3 py-1 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
                 placeholder="Confirm your password"
               />
               <button
