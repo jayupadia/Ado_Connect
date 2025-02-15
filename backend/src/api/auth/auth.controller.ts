@@ -28,12 +28,12 @@ export class AuthController {
   }
 
   static async login(req: Request, res: Response) {
-    console.log(`Login request received for email: ${req.body.email}`);
+    console.log(`Login request received for identifier: ${req.body.identifier}`);
     try {
       const result = await AuthService.login(req.body);
       successResponse(res, result, "User logged in successfully");
     } catch (error) {
-      console.error(`Login request failed for email: ${req.body.email}`, error);
+      console.error(`Login request failed for identifier: ${req.body.identifier}`, error);
       res.status(500).json({ message: "Failed to login" });
     }
   }

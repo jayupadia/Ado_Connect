@@ -66,19 +66,21 @@ export class AuthService {
   }
 
   static async login(input: LoginInput) {
-    const user = await User.findOne({ email: input.email });
+    const user = await User.findOne({
+      $or: [{ email: input.identifier }, { username: input.identifier }]
+    });
     if (!user) {
-      throw new UnauthorizedError("Invalid email or password");
+      throw new UnauthorizedError("Invalid identifier or password");
     }
 
     const isPasswordValid = await bcrypt.compare(input.password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedError("Invalid email or password");
+      throw new UnauthorizedError("Invalid identifier or password");
     }
 
     const userId = user._id as unknown as string;
     const token = generateToken(userId);
-    return { user: { id: userId, email: user.email, name: user.name }, token };
+    return { user: { id: userId, email: user.email, name: user.name, username: user.username }, token };
   }
 
   static async forgotPassword(email: string) {

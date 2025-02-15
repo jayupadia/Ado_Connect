@@ -9,9 +9,12 @@ import { Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import Loader from './Loader'
 import { login as loginUser } from '../api/auth'
+import { useRouter } from 'next/navigation'
+import { toast } from 'react-toastify' // Import toast
+import Cookies from 'js-cookie' // Import js-cookie
 
 const schema = yup.object({
-  email: yup.string().email('Invalid email').required('Email is required'),
+  identifier: yup.string().required('Email or Username is required'),
   password: yup.string().required('Password is required'),
 }).required()
 
@@ -24,13 +27,18 @@ export default function LoginForm() {
     resolver: yupResolver(schema)
   })
 
+  const router = useRouter() // Ensure this is used correctly
+
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
-      await loginUser(data)
-      // Handle successful login, e.g., redirect to dashboard
+      const response = await loginUser(data)
+      Cookies.set('token', response.token, { expires: 7 }) // Store token in cookies
+      toast.success('Login successful!')
+      router.push('/dashboard')
     } catch (error) {
       console.error(error)
+      toast.error('Login failed. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -49,15 +57,15 @@ export default function LoginForm() {
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Email</label>
+            <label htmlFor="identifier" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Email or Username</label>
             <input
-              type="email"
-              id="email"
-              {...register('email')}
+              type="text"
+              id="identifier"
+              {...register('identifier')}
               className="w-full px-4 py-2 rounded-md border-2 border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 transition-all duration-200"
-              placeholder="Enter your email"
+              placeholder="Enter your email or username"
             />
-            {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
+            {errors.identifier && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.identifier.message}</p>}
           </div>
 
           <div>
@@ -114,7 +122,7 @@ export default function LoginForm() {
 
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
             Sign up
           </Link>

@@ -7,6 +7,7 @@ import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import { verifyOTP as verifyOtpRequest } from '../api/auth'
 import { useRouter } from 'next/navigation' // Ensure this import is correct
+import { toast } from 'react-toastify' // Import toast
 
 const schema = yup.object({
   otp: yup.string().required('OTP is required').length(6, 'OTP must be 6 digits'),
@@ -55,12 +56,14 @@ export default function OtpVerificationForm() {
         localStorage.removeItem('email'); // Clear email from localStorage
         localStorage.removeItem('registrationData'); // Clear registration data from localStorage
         // Handle successful OTP verification, e.g., redirect to login
+        toast.success('OTP verified successfully!')
         router.push('/login');
       } else {
         console.error('Email or registration data not found in localStorage');
       }
     } catch (error) {
       console.error(error)
+      toast.error('OTP verification failed. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

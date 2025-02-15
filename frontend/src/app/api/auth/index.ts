@@ -12,7 +12,7 @@ export const verifyOTP = async (data: { email: string, otp: string }) => {
   return response.data;
 };
 
-export const login = async (data: { email: string, password: string }) => {
+export const login = async (data: { identifier: string, password: string }) => {
   const response = await axios.post(`${API_URL}/login`, data);
   return response.data;
 };

@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { resetPassword as resetPasswordRequest } from '../api/auth'
+import { toast } from 'react-toastify' // Import toast
 
 const schema = yup.object({
   password: yup.string()
@@ -46,9 +47,11 @@ export default function ResetPasswordForm() {
     setIsSubmitting(true);
     try {
       await resetPasswordRequest(data);
+      toast.success('Password reset successfully!')
       router.push('/login');
     } catch (error) {
       console.error(error);
+      toast.error('Password reset failed. Please try again.')
     } finally {
       setIsSubmitting(false);
     }

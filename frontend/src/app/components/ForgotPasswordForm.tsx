@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { forgotPassword as forgotPasswordRequest } from '../api/auth'
+import { toast } from 'react-toastify' // Import toast
 
 const schema = yup.object({
   email: yup.string().required('Email is required').email('Must be a valid email'),
@@ -27,9 +28,11 @@ export default function ForgotPasswordForm() {
     setIsSubmitting(true)
     try {
       await forgotPasswordRequest(data)
+      toast.success('OTP sent to your email for password reset.')
       router.push('/verify-otp')
     } catch (error) {
       console.error(error)
+      toast.error('Failed to send OTP. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

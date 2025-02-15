@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Loader from './Loader'
 import { register as registerUser } from '../api/auth' // Import the register function
+import { toast } from 'react-toastify' // Import toast
 
 const schema = yup.object({
   username: yup.string().required('Username is required').min(3, 'Username must be at least 3 characters'),
@@ -36,9 +37,11 @@ export default function RegisterForm() {
       await registerUser(data) // Call the register API
       localStorage.setItem('email', data.email); // Store email in localStorage
       localStorage.setItem('registrationData', JSON.stringify(data)); // Store registration data in localStorage
+      toast.success('Registration successful! Please verify your OTP.')
       router.push('/verify-otp')
     } catch (error) {
       console.error('Registration failed:', error)
+      toast.error('Registration failed. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
