@@ -6,9 +6,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation' // Import useSearchParams
+import { useRouter, useSearchParams } from 'next/navigation'
 import { resetPassword as resetPasswordRequest } from '../api/auth'
-import { toast } from 'react-toastify' // Import toast
+import { toast } from 'react-toastify'
 
 const schema = yup.object({
   password: yup.string()
@@ -29,19 +29,21 @@ export default function ResetPasswordForm() {
     resolver: yupResolver(schema)
   })
   const router = useRouter()
-  const searchParams = useSearchParams() // Get search params
+  const searchParams = useSearchParams()
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      const email = searchParams.get('email') || ''; // Get email from search params
-      const otp = searchParams.get('otp') || ''; // Get OTP from search params
-      await resetPasswordRequest({ email, otp, newPassword: data.password }); // Pass email, otp, and newPassword
+      const email = searchParams.get('email') || '';
+      const otp = searchParams.get('otp') || '';
+      console.log(`Reset password request: email=${email}, otp=${otp}`); // Add logging
+      await resetPasswordRequest({ email, otp, newPassword: data.password });
       toast.success('Password reset successfully!')
       router.push('/login');
     } catch (error) {
       console.error(error);
-      toast.error('Password reset failed. Please try again.')
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Password reset failed. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

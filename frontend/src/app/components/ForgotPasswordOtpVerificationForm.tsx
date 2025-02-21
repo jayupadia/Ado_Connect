@@ -36,7 +36,7 @@ export default function ForgotPasswordOtpVerificationForm() {
     try {
       await verifyForgotPasswordOtpRequest({ email, otp: data.otp })
       toast.success('OTP verified successfully! You can now reset your password.')
-      router.push('/reset-password')
+      router.push(`/reset-password?email=${email}&otp=${data.otp}`) // Include email and OTP in the URL
     } catch (error) {
       console.error(error)
       toast.error('Failed to verify OTP. Please try again.')

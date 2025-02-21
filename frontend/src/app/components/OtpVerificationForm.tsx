@@ -145,7 +145,7 @@ export default function OtpVerificationForm() {
         className="mt-6 text-center"
       >
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Didn't receive the OTP?{' '}
+          Didn&apos;t receive the OTP?{' '}
           <button 
             className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
             onClick={() => setCountdown(300)}

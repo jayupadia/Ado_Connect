@@ -94,7 +94,7 @@ export class AuthService {
 
     try {
       await emailService.sendOTP(email, otp);
-      console.log(`OTP sent to email: ${email}`);
+      console.log(`OTP sent to email: ${email}, OTP: ${otp}`); // Add OTP to log
       return { message: "OTP sent to email for password reset" };
     } catch (error) {
       console.error(`Failed to send OTP to email: ${email}`, error);
@@ -115,8 +115,10 @@ export class AuthService {
   }
 
   static async resetPassword(email: string, otp: string, newPassword: string) {
+    console.log(`Reset password request received for email: ${email}, OTP: ${otp}`); // Add OTP to log
     const otpRecord = await OTP.findOne({ email, otp });
     if (!otpRecord) {
+      console.log(`Invalid OTP for email: ${email}, OTP: ${otp}`); // Add OTP to log
       throw new BadRequestError("Invalid OTP");
     }
 
