@@ -102,6 +102,18 @@ export class AuthService {
     }
   }
 
+  static async verifyForgotPasswordOTP(email: string, otp: string) {
+    const otpRecord = await OTP.findOne({ email, otp });
+    if (!otpRecord) {
+      throw new BadRequestError("Invalid OTP");
+    }
+
+    // Delete the OTP record
+    await OTP.deleteOne({ _id: otpRecord._id });
+
+    return { message: "OTP verified successfully" };
+  }
+
   static async resetPassword(email: string, otp: string, newPassword: string) {
     const otpRecord = await OTP.findOne({ email, otp });
     if (!otpRecord) {

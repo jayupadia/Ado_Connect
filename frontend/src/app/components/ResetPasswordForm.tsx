@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation' // Import useSearchParams
 import { resetPassword as resetPasswordRequest } from '../api/auth'
 import { toast } from 'react-toastify' // Import toast
 
@@ -21,19 +21,6 @@ const schema = yup.object({
 
 type FormData = yup.InferType<typeof schema>
 
-interface UserInfo {
-  name: string;
-  userName: string;
-  fullName: string;
-}
-
-// This would normally come from your API/backend
-const mockUserInfo: UserInfo = {
-  name: "John Doe",
-  userName: "johndoe123",
-  fullName: "John Michael Doe"
-}
-
 export default function ResetPasswordForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -42,11 +29,14 @@ export default function ResetPasswordForm() {
     resolver: yupResolver(schema)
   })
   const router = useRouter()
+  const searchParams = useSearchParams() // Get search params
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      await resetPasswordRequest(data);
+      const email = searchParams.get('email') || ''; // Get email from search params
+      const otp = searchParams.get('otp') || ''; // Get OTP from search params
+      await resetPasswordRequest({ email, otp, newPassword: data.password }); // Pass email, otp, and newPassword
       toast.success('Password reset successfully!')
       router.push('/login');
     } catch (error) {
@@ -58,7 +48,6 @@ export default function ResetPasswordForm() {
   }
 
   const inputClasses = "w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300"
-  const readOnlyInputClasses = "w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 cursor-not-allowed"
   const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
   const errorClasses = "mt-1 text-sm text-red-600 dark:text-red-400"
 
@@ -71,53 +60,6 @@ export default function ResetPasswordForm() {
     >
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Reset Password</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Read-only fields */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <label htmlFor="name" className={labelClasses}>Name</label>
-          <input
-            type="text"
-            id="name"
-            value={mockUserInfo.name}
-            readOnly
-            className={readOnlyInputClasses}
-          />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <label htmlFor="userName" className={labelClasses}>Username</label>
-          <input
-            type="text"
-            id="userName"
-            value={mockUserInfo.userName}
-            readOnly
-            className={readOnlyInputClasses}
-          />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <label htmlFor="fullName" className={labelClasses}>Full Name</label>
-          <input
-            type="text"
-            id="fullName"
-            value={mockUserInfo.fullName}
-            readOnly
-            className={readOnlyInputClasses}
-          />
-        </motion.div>
-
-        {/* Writable password fields */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

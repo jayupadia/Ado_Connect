@@ -58,7 +58,17 @@ export class AuthController {
       successResponse(res, result, "Password reset successfully");
     } catch (error) {
       console.error(`Reset password request failed for email: ${email}`, error);
-      res.status(500).json({ message: "Failed to reset password" });
+      res.status(400).json({ message: "Failed to reset password" }); // Ensure correct status code
+    }
+  }
+
+  static async verifyForgotPasswordOTP(req: Request, res: Response) {
+    const { email, otp } = req.body;
+    try {
+      const result = await AuthService.verifyForgotPasswordOTP(email, otp);
+      successResponse(res, result, "OTP verified successfully");
+    } catch (error) {
+      res.status(500).json({ message: "Failed to verify OTP" });
     }
   }
 }

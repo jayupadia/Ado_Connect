@@ -29,7 +29,7 @@ export default function ForgotPasswordForm() {
     try {
       await forgotPasswordRequest(data)
       toast.success('OTP sent to your email for password reset.')
-      router.push('/verify-otp')
+      router.push(`/verify-forgot-password-otp?email=${data.email}`) // Include email in the URL
     } catch (error) {
       console.error(error)
       toast.error('Failed to send OTP. Please try again.')
@@ -52,7 +52,7 @@ export default function ForgotPasswordForm() {
       >
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Check Your Email</h2>
         <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-          We've sent a password reset link to your email address. Please check your inbox and follow the instructions to reset your password.
+          We&apos;ve sent a password reset link to your email address. Please check your inbox and follow the instructions to reset your password.
         </p>
         <Link 
           href="/login" 
@@ -73,7 +73,7 @@ export default function ForgotPasswordForm() {
     >
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Forgot Password</h2>
       <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-        Enter your email address and we'll send you a link to reset your password.
+        Enter your email address and we&apos;ll send you a link to reset your password.
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <motion.div

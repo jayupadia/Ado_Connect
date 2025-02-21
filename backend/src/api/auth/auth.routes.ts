@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { AuthController } from "./auth.controller";
 import { validationMiddleware } from "../../middlewares/validation.middleware";
-import { registerSchema, verifyOTPSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } from "./auth.schema";
+import { registerSchema, verifyOTPSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, verifyForgotPasswordOTPSchema } from "./auth.schema";
 
 const router = Router();
 
@@ -10,6 +10,7 @@ router.post("/verify-otp", validationMiddleware(verifyOTPSchema), AuthController
 router.post("/login", validationMiddleware(loginSchema), AuthController.login);
 router.post("/forgot-password", validationMiddleware(forgotPasswordSchema), AuthController.forgotPassword);
 router.post("/reset-password", validationMiddleware(resetPasswordSchema), AuthController.resetPassword);
+router.post("/verify-forgot-password-otp", validationMiddleware(verifyForgotPasswordOTPSchema), AuthController.verifyForgotPasswordOTP);
 
 export const authRoutes = router;
 
