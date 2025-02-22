@@ -108,9 +108,6 @@ export class AuthService {
       throw new BadRequestError("Invalid OTP");
     }
 
-    // Delete the OTP record
-    await OTP.deleteOne({ _id: otpRecord._id });
-
     return { message: "OTP verified successfully" };
   }
 
