@@ -34,14 +34,19 @@ export default function RegisterForm() {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
-      await registerUser(data) // Call the register API
-      localStorage.setItem('email', data.email); // Store email in localStorage
-      localStorage.setItem('registrationData', JSON.stringify(data)); // Store registration data in localStorage
-      toast.success('Registration successful! Please verify your OTP.')
-      router.push('/verify-otp')
-    } catch (error) {
+      const response = await registerUser(data) // Call the register API
+      toast.success(response.message) // Display success message from backend
+      const query = new URLSearchParams({
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        name: data.name
+      }).toString();
+      
+      router.push(`/verify-otp?${query}`);
+    } catch (error: any) {
       console.error('Registration failed:', error)
-      toast.error('Registration failed. Please try again.')
+      toast.error(error.response?.data?.message || 'Registration failed. Please try again.') // Display error message from backend
     } finally {
       setIsSubmitting(false)
     }

@@ -1,16 +1,17 @@
 import { Router } from "express";
-import { AuthController } from "./auth.controller";
+import { registerController, verifyOTPController, loginController, forgotPasswordController, resetPasswordController, verifyForgotPasswordOTPController, resendOTPController } from "./auth.controller";
 import { validationMiddleware } from "../../middlewares/validation.middleware";
 import { registerSchema, verifyOTPSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, verifyForgotPasswordOTPSchema } from "./auth.schema";
 
 const router = Router();
 
-router.post("/register", validationMiddleware(registerSchema), AuthController.register);
-router.post("/verify-otp", validationMiddleware(verifyOTPSchema), AuthController.verifyOTP);
-router.post("/login", validationMiddleware(loginSchema), AuthController.login);
-router.post("/forgot-password", validationMiddleware(forgotPasswordSchema), AuthController.forgotPassword);
-router.post("/reset-password", validationMiddleware(resetPasswordSchema), AuthController.resetPassword);
-router.post("/verify-forgot-password-otp", validationMiddleware(verifyForgotPasswordOTPSchema), AuthController.verifyForgotPasswordOTP);
+router.post("/register", validationMiddleware(registerSchema), registerController);
+router.post("/verify-otp", validationMiddleware(verifyOTPSchema), verifyOTPController);
+router.post("/login", validationMiddleware(loginSchema), loginController);
+router.post("/forgot-password", validationMiddleware(forgotPasswordSchema), forgotPasswordController);
+router.post("/reset-password", validationMiddleware(resetPasswordSchema), resetPasswordController);
+router.post("/verify-forgot-password-otp", validationMiddleware(verifyForgotPasswordOTPSchema), verifyForgotPasswordOTPController);
+router.post("/resend-otp", resendOTPController);
 
 export const authRoutes = router;
 

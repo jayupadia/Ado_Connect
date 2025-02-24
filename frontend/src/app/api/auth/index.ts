@@ -7,8 +7,13 @@ export const register = async (data: { username: string, email: string, password
   return response.data;
 };
 
-export const verifyOTP = async (data: { email: string, otp: string }) => {
+export const verifyOTP = async (data: { otp: string, registrationData: { username: string, email: string, password: string, name: string } }) => {
   const response = await axios.post(`${API_URL}/verify-otp`, data);
+  return response.data;
+};
+
+export const resendOTP = async (data: { email: string }) => {
+  const response = await axios.post(`${API_URL}/resend-otp`, data);
   return response.data;
 };
 
