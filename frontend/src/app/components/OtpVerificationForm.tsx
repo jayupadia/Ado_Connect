@@ -7,7 +7,7 @@ import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import { verifyOTP as verifyOtpRequest, resendOTP as resendOtpRequest } from '../api/auth' // Import resendOTP
 import { useRouter, useSearchParams } from 'next/navigation' // Ensure this import is correct
-import { toast } from 'react-toastify' // Import toast
+import { toast } from 'react-hot-toast' // Import toast
 
 const schema = yup.object({
   otp: yup.string().required('OTP is required').length(6, 'OTP must be 6 digits'),

@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Loader from './Loader'
 import { register as registerUser } from '../api/auth' // Import the register function
-import { toast } from 'react-toastify' // Import toast
+import { toast } from 'react-hot-toast' // Import toast
 
 const schema = yup.object({
   username: yup.string().required('Username is required').min(3, 'Username must be at least 3 characters'),
@@ -35,7 +35,10 @@ export default function RegisterForm() {
     setIsSubmitting(true)
     try {
       const response = await registerUser(data) // Call the register API
-      toast.success(response.message) // Display success message from backend
+      // Log the response to inspect its structure
+      console.log('Registration response:', response)
+      // Use a default message if response.message is missing
+      toast.success(response.message || 'Registration successful!')
       const query = new URLSearchParams({
         username: data.username,
         email: data.email,

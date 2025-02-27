@@ -8,7 +8,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { forgotPassword as forgotPasswordRequest } from '../api/auth'
-import { toast } from 'react-toastify' // Import toast
+import { toast } from 'react-hot-toast' // Import toast
 
 const schema = yup.object({
   email: yup.string().required('Email is required').email('Must be a valid email'),

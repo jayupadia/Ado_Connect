@@ -10,7 +10,7 @@ import Link from 'next/link'
 import Loader from './Loader'
 import { login as loginUser } from '../api/auth'
 import { useRouter } from 'next/navigation'
-import { toast } from 'react-toastify' // Import toast
+import { toast } from 'react-hot-toast' // Import toast
 import Cookies from 'js-cookie' // Import js-cookie
 
 const schema = yup.object({
