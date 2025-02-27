@@ -7,49 +7,38 @@ import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import Loader from './Loader'
-import { register as registerUser } from '../api/auth' // Import the register function
-import { toast } from 'react-hot-toast' // Import toast
+import { register as registerUser } from '../api/auth'
+import { toast } from 'react-hot-toast'
 
 const schema = yup.object({
   username: yup.string().required('Username is required').min(3, 'Username must be at least 3 characters'),
   email: yup.string().required('Email is required').email('Must be a valid email'),
   password: yup.string().required('Password is required').min(8, 'Password must be at least 8 characters'),
   confirmPassword: yup.string().oneOf([yup.ref('password')], 'Passwords must match'),
-  name: yup.string().required('Name is required') // Add name validation
+  name: yup.string().required('Name is required'),
 }).required()
 
 type FormData = yup.InferType<typeof schema>
 
-export default function RegisterForm() {
+export default function RegisterForm({ onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema)
   })
-  const router = useRouter()
+  
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
-      const response = await registerUser(data) // Call the register API
-      // Log the response to inspect its structure
-      console.log('Registration response:', response)
-      // Use a default message if response.message is missing
+      const response = await registerUser(data)
       toast.success(response.message || 'Registration successful!')
-      const query = new URLSearchParams({
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        name: data.name
-      }).toString();
-      
-      router.push(`/verify-otp?${query}`);
+      onSuccess(data)
     } catch (error: any) {
       console.error('Registration failed:', error)
-      toast.error(error.response?.data?.message || 'Registration failed. Please try again.') // Display error message from backend
+      toast.error(error.response?.data?.message || 'Registration failed. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

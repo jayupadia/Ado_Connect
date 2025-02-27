@@ -18,6 +18,7 @@ export const registerSchema = z.object({
   email: emailSchema,
   password: z.string().min(6, "Password must be at least 6 characters long"),
   name: z.string().min(1, "Name is required"),
+  otp: z.string().length(6, "OTP must be 6 digits").optional(), // Add optional OTP field
 });
 
 export const verifyOTPSchema = z.object({

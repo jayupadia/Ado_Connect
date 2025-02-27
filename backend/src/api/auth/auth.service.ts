@@ -6,55 +6,46 @@ import { BadRequestError, UnauthorizedError, InternalServerError } from "../../s
 import { emailService } from "../../services/email.service";
 import { generateToken } from '../../shared/jwt';
 
-export const register = async (input: RegisterInput) => {
-  const existingUser = await User.findOne({ email: input.email });
-  if (existingUser) {
-    throw new BadRequestError("Email already in use");
-  }
-
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  await OTP.create({ email: input.email, otp });
-
-  console.log(`OTP created for email: ${input.email}, OTP: ${otp}`);
-
-  try {
-    await emailService.sendOTP(input.email, otp);
-    console.log(`OTP sent to email: ${input.email}`);
-    return { message: "OTP sent to email for verification", registrationData: input };
-  } catch (error) {
-    console.error(`Failed to send OTP to email: ${input.email}`, error);
-    throw new InternalServerError("Failed to send OTP");
-  }
-};
-
-export const verifyOTP = async (otp: string, registrationData: RegisterInput) => {
-  console.log(`Verifying OTP: ${otp}`);
-
-  const otpRecord = await OTP.findOne({ otp });
-  if (!otpRecord) {
-    console.log(`No OTP record found for OTP: ${otp}`);
-    throw new BadRequestError("Invalid OTP");
-  }
-
-  const { email, username, password, name } = registrationData;
-
-  // Delete the OTP record
-  await OTP.deleteOne({ _id: otpRecord._id });
-
-  // Create a new user with the registration data
+const createUser = async (registrationData: RegisterInput) => {
   const user = new User({
-    username,
-    email,
-    password: await bcrypt.hash(password, 10),
-    name,
+    username: registrationData.username,
+    email: registrationData.email,
+    password: await bcrypt.hash(registrationData.password, 10),
+    name: registrationData.name,
   });
 
   await user.save();
 
-  const userId = user._id as unknown as string;
-  const token = generateToken(userId);
+  const token = generateToken(user._id as unknown as string);
+  return { user: { id: user._id, email: user.email, name: user.name, username: user.username }, token };
+};
 
-  return { user: { id: userId, email: user.email, name: user.name, username: user.username }, token };
+export const register = async (input: { username: string, email: string, password: string, name: string, otp?: string }) => {
+  if (input.otp) {
+    const otpRecord = await OTP.findOne({ otp: input.otp });
+    if (!otpRecord) {
+      throw new BadRequestError("Invalid OTP");
+    }
+
+    await OTP.deleteOne({ _id: otpRecord._id });
+
+    return createUser(input);
+  } else {
+    const existingUser = await User.findOne({ email: input.email });
+    if (existingUser) {
+      throw new BadRequestError("Email already in use");
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    await OTP.create({ email: input.email, otp });
+
+    try {
+      await emailService.sendOTP(input.email, otp);
+      return { message: "OTP sent to email for verification", registrationData: input };
+    } catch (error) {
+      throw new InternalServerError("Failed to send OTP");
+    }
+  }
 };
 
 export const login = async (input: LoginInput) => {
@@ -126,12 +117,15 @@ export const resetPassword = async (email: string, otp: string, newPassword: str
   return { message: "Password reset successfully" };
 };
 
-export const resendOTP = async (email: string) => {
+export const resendOTP = async (email: string, skipUserCheck = false) => {
   console.log(`Resend OTP request received for email: ${email}`); // Add logging
-  const user = await User.findOne({ email });
-  if (!user) {
-    console.log(`User not found for email: ${email}`); // Add logging
-    throw new BadRequestError("User not found");
+
+  if (!skipUserCheck) {
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log(`User not found for email: ${email}`); // Add logging
+      throw new BadRequestError("User not found");
+    }
   }
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -145,5 +139,23 @@ export const resendOTP = async (email: string) => {
     console.error(`Failed to resend OTP to email: ${email}`, error); // Add logging
     throw new InternalServerError("Failed to resend OTP");
   }
+};
+
+export const verifyOTP = async (input: { otp: string, registrationData: RegisterInput }) => {
+  const { otp, registrationData } = input;
+  const otpRecord = await OTP.findOne({ otp });
+  if (!otpRecord) {
+    throw new BadRequestError("Invalid OTP");
+  }
+
+  const currentTime = new Date();
+  const otpAge = (currentTime.getTime() - otpRecord.createdAt.getTime()) / 1000; // Calculate OTP age in seconds
+  if (otpAge > 120) { // Check if OTP is older than 2 minutes
+    throw new BadRequestError("OTP has expired");
+  }
+
+  await OTP.deleteOne({ _id: otpRecord._id });
+
+  return createUser(registrationData);
 };
 

@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import { verifyOTP as verifyOtpRequest, resendOTP as resendOtpRequest } from '../api/auth' // Import resendOTP
-import { useRouter, useSearchParams } from 'next/navigation' // Ensure this import is correct
+import { useRouter } from 'next/navigation' // Ensure this import is correct
 import { toast } from 'react-hot-toast' // Import toast
 
 const schema = yup.object({
@@ -15,7 +15,7 @@ const schema = yup.object({
 
 type FormData = yup.InferType<typeof schema>
 
-export default function OtpVerificationForm() {
+export default function OtpVerificationForm({ registrationData }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [countdown, setCountdown] = useState(120) // 2 minutes in seconds
   const [canResend, setCanResend] = useState(false) // State to handle resend OTP button
@@ -23,12 +23,11 @@ export default function OtpVerificationForm() {
     resolver: yupResolver(schema)
   })
   const router = useRouter() // Ensure this is used correctly
-  const searchParams = useSearchParams()
 
-  const username = searchParams.get('username')
-  const email = searchParams.get('email')
-  const password = searchParams.get('password')
-  const name = searchParams.get('name')
+  const username = registrationData?.username
+  const email = registrationData?.email
+  const password = registrationData?.password
+  const name = registrationData?.name
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,36 +45,30 @@ export default function OtpVerificationForm() {
   }, [])
 
   const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       if (!username || !email || !password || !name) {
-        throw new Error('Missing registration data')
+        throw new Error('Missing registration data');
       }
-      const registrationData = {
-        username,
-        email,
-        password,
-        name
-      };
       console.log('Sending request payload:', { otp: data.otp, registrationData }); // Add logging
-      const response = await verifyOtpRequest({ otp: data.otp, registrationData }) // Call the verify OTP API
-      toast.success(response.message) // Display success message from backend
-      router.push('/login') // Redirect to login page
+      const response = await verifyOtpRequest({ otp: data.otp, registrationData }); // Call the verify OTP API
+      toast.success(response.message); // Display success message from backend
+      router.push('/login'); // Redirect to login page
     } catch (error: any) {
-      console.error('OTP verification failed:', error)
-      toast.error(error.response?.data?.message || 'OTP verification failed. Please try again.') // Display error message from backend
+      console.error('OTP verification failed:', error);
+      toast.error(error.response?.data?.message || 'OTP verification failed. Please try again.'); // Display error message from backend
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleResendOTP = async () => {
     try {
       if (!email) {
         throw new Error('Email is required for resending OTP');
       }
-      console.log('Sending resend OTP request payload:', { email }); // Add logging
-      const response = await resendOtpRequest({ email }) // Call the resend OTP API
+      console.log('Sending resend OTP request payload:', { email, skipUserCheck: true }); // Add skipUserCheck parameter
+      const response = await resendOtpRequest({ email, skipUserCheck: true }) // Call the resend OTP API
       toast.success(response.message) // Display success message from backend
       setCountdown(120) // Reset countdown
       setCanResend(false) // Disable resend OTP button

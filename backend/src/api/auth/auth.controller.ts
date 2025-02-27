@@ -1,33 +1,18 @@
 import type { Request, Response } from "express";
-import { register, verifyOTP, login, forgotPassword, resetPassword, verifyForgotPasswordOTP, resendOTP } from "./auth.service";
+import { register, login, forgotPassword, resetPassword, verifyForgotPasswordOTP, resendOTP, verifyOTP } from "./auth.service";
 import { successResponse } from "../../success-engine/response";
 
 export const registerController = async (req: Request, res: Response) => {
-  const { username, email, password, name } = req.body;
-  console.log(`Register request received for email: ${email}`);
+  const { username, email, password, name, otp } = req.body;
   try {
-    const result = await register({ username, email, password, name });
-    successResponse(res, result, "OTP sent for registration");
-  } catch (error) {
-    console.error(`Register request failed for email: ${email}`, error);
-    res.status(500).json({ message: (error as Error).message || "Failed to send OTP" });
-  }
-};
-
-export const verifyOTPController = async (req: Request, res: Response): Promise<void> => {
-  const { otp, registrationData } = req.body;
-  console.log(`Verify OTP request received for OTP: ${otp}`);
-  console.log('Received request payload:', req.body); // Add logging
-  try {
-    if (!otp || !registrationData) {
-      res.status(400).json({ message: "OTP and registration data are required" });
-      return;
+    const result = await register({ username, email, password, name, otp });
+    if (otp) {
+      successResponse(res, result, "User registered successfully");
+    } else {
+      successResponse(res, result, "OTP sent for registration");
     }
-    const result = await verifyOTP(otp, registrationData);
-    successResponse(res, result, "User registered successfully");
   } catch (error) {
-    console.error(`Verify OTP request failed for OTP: ${otp}`, error);
-    res.status(500).json({ message: (error as Error).message || "Failed to verify OTP" });
+    res.status(500).json({ message: (error as Error).message || "Failed to process request" });
   }
 };
 
@@ -77,14 +62,25 @@ export const verifyForgotPasswordOTPController = async (req: Request, res: Respo
 };
 
 export const resendOTPController = async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { email, skipUserCheck } = req.body; // Add skipUserCheck parameter
   console.log(`Resend OTP request received for email: ${email}`);
   try {
-    const result = await resendOTP(email);
+    const result = await resendOTP(email, skipUserCheck);
     successResponse(res, result, "OTP resent successfully");
   } catch (error) {
     console.error(`Resend OTP request failed for email: ${email}`, error); // Add logging
-    res.status(500).json({ message: (error as Error).message || "Failed to resend OTP" });
+    const typedError = error as { statusCode?: number; message?: string };
+    res.status(typedError.statusCode || 500).json({ message: typedError.message || "Failed to resend OTP" });
+  }
+};
+
+export const verifyOTPController = async (req: Request, res: Response) => {
+  const { otp, registrationData } = req.body;
+  try {
+    const result = await verifyOTP({ otp, registrationData });
+    successResponse(res, result, "OTP verified successfully");
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message || "Failed to verify OTP" });
   }
 };
 
