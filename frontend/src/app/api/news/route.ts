@@ -12,21 +12,21 @@ export async function GET(request: Request) {
     const res = await fetch(`${API_URL}?country=us&pageSize=${ARTICLES_PER_PAGE}&page=${page}&apiKey=${API_KEY}`)
     
     if (!res.ok) {
-      const errorText = await res.text()
-      console.error(`API responded with status ${res.status}: ${errorText}`)
+      if (res.status === 426) {
+        return NextResponse.json({ error: 'Upgrade Required: Please update your client to the latest version. This error indicates that the client is using an outdated version of the API and needs to be updated to continue.' }, { status: 426 })
+      }
       return NextResponse.json({ error: `API error: ${res.status}` }, { status: res.status })
     }
 
     const data = await res.json()
 
     if (data.status !== 'ok') {
-      console.error('API returned non-OK status:', data)
+      
       return NextResponse.json({ error: 'Failed to fetch news' }, { status: 500 })
     }
 
     return NextResponse.json(data)
-  } catch (error) {
-    console.error('Error fetching news:', error)
+  } catch  {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

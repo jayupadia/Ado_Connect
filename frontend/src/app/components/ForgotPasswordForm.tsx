@@ -6,7 +6,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { forgotPassword as forgotPasswordRequest } from '../api/auth'
 import { toast } from 'react-hot-toast' // Import toast
 
@@ -16,22 +15,21 @@ const schema = yup.object({
 
 type FormData = yup.InferType<typeof schema>
 
-export default function ForgotPasswordForm() {
+export default function ForgotPasswordForm({ onSuccess }: { onSuccess: (email: string) => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema)
   })
-  const router = useRouter()
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
       await forgotPasswordRequest(data)
       toast.success('OTP sent to your email for password reset.')
-      router.push(`/verify-forgot-password-otp?email=${data.email}`) // Include email in the URL
-    } catch (error) {
-      console.error(error)
+      setIsSubmitted(true)
+      onSuccess(data.email) // Call onSuccess with the email
+    } catch{
       toast.error('Failed to send OTP. Please try again.')
     } finally {
       setIsSubmitting(false)

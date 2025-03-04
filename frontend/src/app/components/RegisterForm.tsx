@@ -37,7 +37,6 @@ export default function RegisterForm({ onSuccess }) {
       toast.success(response.message || 'Registration successful!')
       onSuccess(data)
     } catch (error: any) {
-      console.error('Registration failed:', error)
       toast.error(error.response?.data?.message || 'Registration failed. Please try again.')
     } finally {
       setIsSubmitting(false)

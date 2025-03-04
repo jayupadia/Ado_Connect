@@ -9,7 +9,6 @@ const startServer = async () => {
       console.log(`Server is running on port ${config.PORT}`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
     process.exit(1);
   }
 };

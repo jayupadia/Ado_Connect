@@ -80,7 +80,6 @@ export const forgotPassword = async (email: string) => {
     console.log(`OTP sent to email: ${email}, OTP: ${otp}`); // Add OTP to log
     return { message: "OTP sent to email for password reset" };
   } catch (error) {
-    console.error(`Failed to send OTP to email: ${email}`, error);
     throw new InternalServerError("Failed to send OTP");
   }
 };
@@ -136,7 +135,6 @@ export const resendOTP = async (email: string, skipUserCheck = false) => {
     console.log(`OTP resent to email: ${email}, OTP: ${otp}`); // Add logging
     return { message: "OTP resent to email for verification" };
   } catch (error) {
-    console.error(`Failed to resend OTP to email: ${email}`, error); // Add logging
     throw new InternalServerError("Failed to resend OTP");
   }
 };

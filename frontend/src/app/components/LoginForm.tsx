@@ -36,8 +36,7 @@ export default function LoginForm() {
       Cookies.set('token', response.token, { expires: 7 }) // Store token in cookies
       toast.success('Login successful!')
       router.push('/dashboard')
-    } catch (error) {
-      console.error(error)
+    } catch {
       toast.error('Login failed. Please try again.')
     } finally {
       setIsSubmitting(false)

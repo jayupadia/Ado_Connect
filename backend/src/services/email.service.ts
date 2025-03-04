@@ -27,7 +27,6 @@ class EmailService {
       });
       console.log(`OTP email sent to ${to}`);
     } catch (error) {
-      console.error(`Failed to send OTP email to ${to}:`, error);
       throw error;
     }
   }
@@ -51,7 +50,6 @@ class EmailService {
       });
       console.log(`Credentials email sent to ${to}`);
     } catch (error) {
-      console.error(`Failed to send credentials email to ${to}:`, error);
       throw error;
     }
   }

@@ -22,7 +22,6 @@ export const loginController = async (req: Request, res: Response) => {
     const result = await login(req.body);
     successResponse(res, result, "User logged in successfully");
   } catch (error) {
-    console.error(`Login request failed for identifier: ${req.body.identifier}`, error);
     res.status(500).json({ message: (error as Error).message || "Failed to login" });
   }
 };
@@ -34,7 +33,6 @@ export const forgotPasswordController = async (req: Request, res: Response) => {
     const result = await forgotPassword(email);
     successResponse(res, result, "OTP sent for password reset");
   } catch (error) {
-    console.error(`Forgot password request failed for email: ${email}`, error);
     res.status(500).json({ message: (error as Error).message || "Failed to send OTP" });
   }
 };
@@ -46,7 +44,6 @@ export const resetPasswordController = async (req: Request, res: Response) => {
     const result = await resetPassword(email, otp, newPassword);
     successResponse(res, result, "Password reset successfully");
   } catch (error) {
-    console.error(`Reset password request failed for email: ${email}`, error);
     res.status(400).json({ message: (error as Error).message || "Failed to reset password" }); // Ensure correct status code
   }
 };
@@ -68,7 +65,6 @@ export const resendOTPController = async (req: Request, res: Response) => {
     const result = await resendOTP(email, skipUserCheck);
     successResponse(res, result, "OTP resent successfully");
   } catch (error) {
-    console.error(`Resend OTP request failed for email: ${email}`, error); // Add logging
     const typedError = error as { statusCode?: number; message?: string };
     res.status(typedError.statusCode || 500).json({ message: typedError.message || "Failed to resend OTP" });
   }

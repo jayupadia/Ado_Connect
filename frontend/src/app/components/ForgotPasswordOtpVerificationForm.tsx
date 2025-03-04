@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { motion } from 'framer-motion'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { verifyForgotPasswordOTP as verifyForgotPasswordOtpRequest } from '../api/auth'
 import { toast } from 'react-hot-toast' // Import toast
 
@@ -15,14 +15,13 @@ const schema = yup.object({
 
 type FormData = yup.InferType<typeof schema>
 
-export default function ForgotPasswordOtpVerificationForm() {
+export default function ForgotPasswordOtpVerificationForm({ email, onSuccess }: { email: string, onSuccess: (otp: string) => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(120) // 2 minutes in seconds
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema)
   })
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const email = searchParams.get('email') || ''
 
   useEffect(() => {
     if (!email) {
@@ -31,14 +30,26 @@ export default function ForgotPasswordOtpVerificationForm() {
     }
   }, [email, router])
 
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      toast.error('OTP has expired. Please request a new one.')
+      router.push('/forgot-password')
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1)
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [timeLeft, router])
+
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
       await verifyForgotPasswordOtpRequest({ email, otp: data.otp })
       toast.success('OTP verified successfully! You can now reset your password.')
-      router.push(`/reset-password?email=${email}&otp=${data.otp}`) // Include email and OTP in the URL
-    } catch (error) {
-      console.error(error)
+      onSuccess(data.otp) // Call onSuccess with the OTP
+    } catch {
       toast.error('Failed to verify OTP. Please try again.')
     } finally {
       setIsSubmitting(false)
@@ -82,7 +93,7 @@ export default function ForgotPasswordOtpVerificationForm() {
         >
           <motion.button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || timeLeft <= 0}
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -99,6 +110,9 @@ export default function ForgotPasswordOtpVerificationForm() {
           </motion.button>
         </motion.div>
       </form>
+      <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
+        Time left: {Math.floor(timeLeft / 60)}:{timeLeft % 60 < 10 ? `0${timeLeft % 60}` : timeLeft % 60}
+      </p>
     </motion.div>
   )
 }

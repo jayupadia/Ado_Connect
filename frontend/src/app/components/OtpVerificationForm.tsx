@@ -55,7 +55,6 @@ export default function OtpVerificationForm({ registrationData }) {
       toast.success(response.message); // Display success message from backend
       router.push('/login'); // Redirect to login page
     } catch (error: any) {
-      console.error('OTP verification failed:', error);
       toast.error(error.response?.data?.message || 'OTP verification failed. Please try again.'); // Display error message from backend
     } finally {
       setIsSubmitting(false);
@@ -73,7 +72,6 @@ export default function OtpVerificationForm({ registrationData }) {
       setCountdown(120) // Reset countdown
       setCanResend(false) // Disable resend OTP button
     } catch (error: any) {
-      console.error('Resend OTP failed:', error) // Add logging
       toast.error(error.response?.data?.message || 'Resend OTP failed. Please try again.') // Display error message from backend
     }
   }

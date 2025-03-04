@@ -5,23 +5,19 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { resetPassword as resetPasswordRequest } from '../api/auth'
 import { toast } from 'react-hot-toast'
+import { Eye, EyeOff } from 'lucide-react' // Import lucide-react icons
 
 const schema = yup.object({
-  password: yup.string()
-    .required('Password is required')
-    .min(8, 'Password must be at least 8 characters'),
-  confirmPassword: yup.string()
-    .oneOf([yup.ref('password')], 'Passwords must match')
-    .required('Confirm Password is required'),
+  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+  confirmPassword: yup.string().oneOf([yup.ref('password'), undefined], 'Passwords must match')
 }).required()
 
 type FormData = yup.InferType<typeof schema>
 
-export default function ResetPasswordForm() {
+export default function ResetPasswordForm({ email, otp }: { email: string, otp: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -29,23 +25,17 @@ export default function ResetPasswordForm() {
     resolver: yupResolver(schema)
   })
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      const email = searchParams.get('email') || '';
-      const otp = searchParams.get('otp') || '';
-      console.log(`Reset password request: email=${email}, otp=${otp}`); // Add logging
-      await resetPasswordRequest({ email, otp, newPassword: data.password });
-      toast.success('Password reset successfully!')
-      router.push('/login');
-    } catch (error) {
-      console.error(error);
-      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Password reset failed. Please try again.';
-      toast.error(errorMessage);
+      await resetPasswordRequest({ email, otp, newPassword: data.password })
+      toast.success('Password reset successfully! You can now log in.')
+      router.push('/login')
+    } catch{
+      toast.error('Failed to reset password. Please try again.')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
   }
 
@@ -65,7 +55,7 @@ export default function ResetPasswordForm() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.1 }}
         >
           <label htmlFor="password" className={labelClasses}>New Password</label>
           <div className="relative">
@@ -78,8 +68,8 @@ export default function ResetPasswordForm() {
             />
             <button
               type="button"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -90,9 +80,9 @@ export default function ResetPasswordForm() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.2 }}
         >
-          <label htmlFor="confirmPassword" className={labelClasses}>Confirm New Password</label>
+          <label htmlFor="confirmPassword" className={labelClasses}>Confirm Password</label>
           <div className="relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
@@ -103,8 +93,8 @@ export default function ResetPasswordForm() {
             />
             <button
               type="button"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400"
             >
               {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -115,7 +105,7 @@ export default function ResetPasswordForm() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.3 }}
         >
           <motion.button
             type="submit"

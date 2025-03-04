@@ -31,6 +31,9 @@ export default function News() {
       const data = await response.json()
 
       if (!response.ok) {
+        if (response.status === 426) {
+          throw new Error('API error: 426')
+        }
         throw new Error(data.error || 'Failed to fetch news')
       }
 
@@ -43,7 +46,6 @@ export default function News() {
         totalResults: data.totalResults
       }
     } catch (err) {
-      console.error('Error fetching news:', err)
       throw err
     }
   }
@@ -59,7 +61,11 @@ export default function News() {
       setPage(prev => prev + 1)
       setHasMore(articles.length + data.articles.length < data.totalResults)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
+      if (err.message === 'API error: 426') {
+        setHasMore(false)
+      } else {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred')
+      }
     } finally {
       setIsLoadingMore(false)
     }
@@ -120,15 +126,6 @@ export default function News() {
     )
   }
 
-  if (error) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-white to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-        <h1 className="text-4xl font-bold mb-4 text-red-500">Error</h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300">{error}</p>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-white to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       <h1 className="text-4xl font-bold mb-8 text-center text-gray-800 dark:text-white">Latest News</h1>
@@ -151,6 +148,11 @@ export default function News() {
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 className="w-10 h-10 border-t-4 border-b-4 border-indigo-500 rounded-full"
               />
+            </div>
+          )}
+          {!hasMore && (
+            <div className="flex justify-center mt-8">
+              <p className="text-xl text-center text-gray-600 dark:text-gray-300">Today&apos;s news is completed.</p>
             </div>
           )}
         </>
