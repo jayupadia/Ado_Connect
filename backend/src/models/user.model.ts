@@ -7,6 +7,8 @@ export interface IUser extends Document {
   name: string;
   bio?: string;
   profile_picture?: string;
+  followers: mongoose.Types.ObjectId[];
+  following: mongoose.Types.ObjectId[];
 }
 
 const userSchema = new Schema<IUser>({
@@ -16,6 +18,8 @@ const userSchema = new Schema<IUser>({
   name: { type: String, required: true },
   bio: { type: String },
   profile_picture: { type: String },
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 export const User = mongoose.model<IUser>('User', userSchema);
