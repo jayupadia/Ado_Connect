@@ -21,7 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Toaster position="top-right" containerStyle={{ top: '60px' }} />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+          <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors text-gray-900 dark:text-white duration-300">
             <Navbar />
             {children}
           </div>
